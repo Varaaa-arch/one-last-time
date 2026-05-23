@@ -1,82 +1,87 @@
 "use client"
 
-import { motion, useMotionValue, useSpring } from "framer-motion"
-import { useEffect } from "react"
+import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 
-export default function CustomCursor() {
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
+const images = [
+  "/textures/trail/1.jpg",
+  "/textures/trail/2.jpg",
+  "/textures/trail/3.jpg",
+  "/textures/trail/4.jpg",
+]
 
-  // SMOOTH FOLLOW
-  const smoothX = useSpring(mouseX, {
-    damping: 20,
-    stiffness: 120,
-    mass: 0.5,
-  })
+type TrailImage = {
+  id: number
+  x: number
+  y: number
+  src: string
+}
 
-  const smoothY = useSpring(mouseY, {
-    damping: 20,
-    stiffness: 120,
-    mass: 0.5,
-  })
+export default function ImageTrailCursor() {
+  const [trails, setTrails] = useState<TrailImage[]>([])
 
   useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      mouseX.set(e.clientX - 12)
-      mouseY.set(e.clientY - 12)
+    let id = 0
+
+    const handleMove = (e: MouseEvent) => {
+      const newTrail: TrailImage = {
+        id: id++,
+        x: e.clientX,
+        y: e.clientY,
+        src: images[Math.floor(Math.random() * images.length)],
+      }
+
+      setTrails((prev) => [...prev, newTrail])
+
+      setTimeout(() => {
+        setTrails((prev) =>
+          prev.filter((trail) => trail.id !== newTrail.id)
+        )
+      }, 900)
     }
 
-    window.addEventListener("mousemove", moveCursor)
+    window.addEventListener("mousemove", handleMove)
 
     return () => {
-      window.removeEventListener("mousemove", moveCursor)
+      window.removeEventListener("mousemove", handleMove)
     }
-  }, [mouseX, mouseY])
+  }, [])
 
   return (
     <>
-      {/* MAIN CURSOR */}
-      <motion.div
-        style={{
-          x: smoothX,
-          y: smoothY,
-        }}
-        className="
-          pointer-events-none
-          fixed
-          left-0
-          top-0
-          z-[999999
-          h-6
-          w-6
-          rounded-full
-          bg-white
-          mix-blend-difference
-        "
-      />
-
-      {/* GLOW */}
-      <motion.div
-        style={{
-          x: smoothX,
-          y: smoothY,
-        }}
-        transition={{
-          duration: 0.4,
-        }}
-        className="
-          pointer-events-none
-          fixed
-          left-0
-          top-0
-          z-999998
-          h-16
-          w-16
-          rounded-full
-          bg-white/10
-          blur-2xl
-        "
-      />
+      {trails.map((trail) => (
+        <motion.img
+          key={trail.id}
+          src={trail.src}
+          initial={{
+            opacity: 0,
+            scale: 0.8,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="
+            pointer-events-none
+            fixed
+            z-9998
+            h-[180px]
+            w-[140px]
+            object-cover
+          "
+          style={{
+            left: trail.x - 70,
+            top: trail.y - 90,
+          }}
+        />
+      ))}
     </>
   )
 }
