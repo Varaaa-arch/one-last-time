@@ -89,7 +89,7 @@ export default function StudioLoader() {
                     duration: 1.8,
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  src="/textures/loader.jpg"
+                  src="/textures/loader/loader.jpg"
                   alt="loader"
                   className="h-[340px] w-[240px] object-cover"
                 />
