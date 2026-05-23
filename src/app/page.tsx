@@ -15,7 +15,7 @@ export default function Home() {
       <CustomCursor />
 
       {/* MAIN WEBSITE */}
-      <main className="relative w-full overflow-hidden bg-pure-black text-soft-white">
+      <main className="relative w-full overflow-hidden bg-[#f3f1ec] text-black">
         
         {/* HERO
         <HeroIntro />
