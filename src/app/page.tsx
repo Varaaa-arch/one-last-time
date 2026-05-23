@@ -1,4 +1,5 @@
-import StudioLoader from "@/components/loaders/StudioLoader"
+import StudioLoader from "@/components/loaders/StudioLoader";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 // import HeroIntro from "@/components/sections/02_HeroIntro"
 // import WhatIRealized from "@/components/sections/03_WhatIRealized"
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       {/* GLOBAL LOADER */}
       <StudioLoader />
+      <CustomCursor />
 
       {/* MAIN WEBSITE */}
       <main className="relative w-full overflow-hidden bg-pure-black text-soft-white">

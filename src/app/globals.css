@@ -5,6 +5,10 @@
   --foreground: #171717;
 }
 
+* {
+  cursor: none;
+}
+
 body {
   background: #f3f1ec;
 }
