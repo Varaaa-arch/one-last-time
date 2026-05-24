@@ -70,7 +70,7 @@ export default function StudioLoader() {
             >
               {/* TOP INFO */}
               <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-black">
-                <p>BEFORE YOU LEAVE</p>
+                <p>One Last Time</p>
                 <p>{progress}</p>
               </div>
 

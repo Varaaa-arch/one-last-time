@@ -6,7 +6,13 @@
 }
 
 * {
-  cursor: none;
+  cursor: none !important;
+}
+
+html,
+body {
+  background: #f3f1ec;
+  color: #111111;
 }
 
 body {

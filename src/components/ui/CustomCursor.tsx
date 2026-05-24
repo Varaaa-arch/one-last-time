@@ -1,87 +1,79 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { motion, useMotionValue, useSpring } from "framer-motion"
+import { useEffect } from "react"
 
-const images = [
-  "/textures/trail/1.jpg",
-  "/textures/trail/2.jpg",
-  "/textures/trail/3.jpg",
-  "/textures/trail/4.jpg",
-]
+export default function CustomCursor() {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-type TrailImage = {
-  id: number
-  x: number
-  y: number
-  src: string
-}
+  const smoothX = useSpring(mouseX, {
+    damping: 30,
+    stiffness: 280,
+    mass: 0.5,
+  })
 
-export default function ImageTrailCursor() {
-  const [trails, setTrails] = useState<TrailImage[]>([])
+  const smoothY = useSpring(mouseY, {
+    damping: 30,
+    stiffness: 280,
+    mass: 0.5,
+  })
 
   useEffect(() => {
-    let id = 0
-
-    const handleMove = (e: MouseEvent) => {
-      const newTrail: TrailImage = {
-        id: id++,
-        x: e.clientX,
-        y: e.clientY,
-        src: images[Math.floor(Math.random() * images.length)],
-      }
-
-      setTrails((prev) => [...prev, newTrail])
-
-      setTimeout(() => {
-        setTrails((prev) =>
-          prev.filter((trail) => trail.id !== newTrail.id)
-        )
-      }, 900)
+    const moveCursor = (e: MouseEvent) => {
+      mouseX.set(e.clientX - 5)
+      mouseY.set(e.clientY - 5)
     }
 
-    window.addEventListener("mousemove", handleMove)
+    window.addEventListener("mousemove", moveCursor)
 
     return () => {
-      window.removeEventListener("mousemove", handleMove)
+      window.removeEventListener("mousemove", moveCursor)
     }
-  }, [])
+  }, [mouseX, mouseY])
 
   return (
     <>
-      {trails.map((trail) => (
-        <motion.img
-          key={trail.id}
-          src={trail.src}
-          initial={{
-            opacity: 0,
-            scale: 0.8,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          exit={{
-            opacity: 0,
-          }}
-          transition={{
-            duration: 0.4,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="
-            pointer-events-none
-            fixed
-            z-9998
-            h-[180px]
-            w-[140px]
-            object-cover
-          "
-          style={{
-            left: trail.x - 70,
-            top: trail.y - 90,
-          }}
-        />
-      ))}
+      {/* MAIN DOT */}
+      <motion.div
+        style={{
+          x: smoothX,
+          y: smoothY,
+        }}
+        className="
+          pointer-events-none
+          fixed
+          left-0
+          top-0
+          z-999999
+          h-[10px]
+          w-[10px]
+          rounded-full
+          bg-black
+        "
+      />
+
+      {/* SOFT GLOW */}
+      <motion.div
+        style={{
+          x: smoothX,
+          y: smoothY,
+        }}
+        className="
+          pointer-events-none
+          fixed
+          left-0
+          top-0
+          z-999999
+          h-[34px]
+          w-[34px]
+          translate-x-[12px]
+          translate-y-[12px]
+          rounded-full
+          bg-black/10
+          blur-xl
+        "
+      />
     </>
   )
 }
