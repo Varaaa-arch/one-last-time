@@ -2,12 +2,14 @@
 
 import gsap from "gsap"
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { startAmbience } from "../audio/AudioManager"
 
 export default function PreLoader() {
   const [entered, setEntered] = useState(false)
   const [time, setTime] = useState("")
   const container = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   // REALTIME WIB CLOCK
   useEffect(() => {
@@ -104,6 +106,7 @@ export default function PreLoader() {
       ease: "power3.inOut",
       onComplete: () => {
         setEntered(true)
+        router.push("/main")
       },
     })
   }
