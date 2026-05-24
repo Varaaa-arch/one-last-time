@@ -29,6 +29,7 @@ export default function PreLoader() {
   // MOUSE PARALLAX
   useEffect(() => {
     const move = (e: MouseEvent) => {
+      if (!container.current) return
       const x = (e.clientX / window.innerWidth - 0.5) * 40
       const y = (e.clientY / window.innerHeight - 0.5) * 40
       gsap.to(".hero-title", {
@@ -112,7 +113,7 @@ export default function PreLoader() {
   return (
     <div
       ref={container}
-      className="fixed inset-0 z-[99999] overflow-hidden bg-[#f3f1ec]"
+      className="fixed inset-0 z-99999 overflow-hidden bg-[#f3f1ec]"
     >
       {/* GRAIN OVERLAY */}
       <div
