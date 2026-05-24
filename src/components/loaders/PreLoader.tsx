@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { startAmbience } from "../audio/AudioManager"
 
 export default function PreLoader() {
   const [entered, setEntered] = useState(false)
@@ -200,7 +201,10 @@ export default function PreLoader() {
                 delay: 0.7,
                 duration: 1,
               }}
-              onClick={() => setEntered(true)}
+              onClick={() => {
+                startAmbience()
+                setEntered(true)
+              }}
               className="
                 group
                 mt-10
