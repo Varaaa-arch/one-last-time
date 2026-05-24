@@ -89,7 +89,7 @@ export default function StudioLoader() {
                     duration: 1.8,
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  src="/textures/loader/loader.jpg"
+                  src="https://qzjxfmdilqdybxkhhpdk.supabase.co/storage/v1/object/public/textures/loader/asojdwa.jpg"
                   alt="loader"
                   className="h-[340px] w-[240px] object-cover"
                 />

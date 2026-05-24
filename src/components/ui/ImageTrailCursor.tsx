@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
 
 const images = [
-  "/textures/trail/1.jpg",
-  "/textures/trail/2.jpg",
-  "/textures/trail/3.jpg",
-  "/textures/trail/4.jpg",
+    "https://qzjxfmdilqdybxkhhpdk.supabase.co/storage/v1/object/public/textures/trail/a1bipa.jpg",
+    "https://qzjxfmdilqdybxkhhpdk.supabase.co/storage/v1/object/public/textures/trail/b2ajsd.jpg",
+    "https://qzjxfmdilqdybxkhhpdk.supabase.co/storage/v1/object/public/textures/trail/b2ajsd.jpg",
+    "https://qzjxfmdilqdybxkhhpdk.supabase.co/storage/v1/object/public/textures/trail/d4ngkr.jpg"
 ]
 
 type TrailImage = {
