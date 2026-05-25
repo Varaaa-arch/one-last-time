@@ -1,48 +1,39 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { gsap } from "gsap"
 import * as THREE from "three"
 
 gsap.registerPlugin(ScrollTrigger)
 
-// ─── PRE-GENERATE PARTICLE DATA ───────────────────────────────────────────────
+// ─── PARTICLE DATA ────────────────────────────────────────────────────────────
 
 const GALAXY_COUNT = 120000
 const galaxyPositions = new Float32Array(GALAXY_COUNT * 3)
 const galaxyColors    = new Float32Array(GALAXY_COUNT * 3)
-
 const colorInner = new THREE.Color("#6b3fa0")
 const colorMid   = new THREE.Color("#1a3a8f")
 const colorOuter = new THREE.Color("#0a0a1a")
 
 for (let i = 0; i < GALAXY_COUNT; i++) {
-  const i3       = i * 3
-  const armCount = 3
-  const arm      = Math.floor(Math.random() * armCount)
-  const armAngle = (arm / armCount) * Math.PI * 2
-  const radius   = Math.pow(Math.random(), 0.5) * 18
-  const spin     = radius * 0.4
-  const branch   = armAngle + spin
-
+  const i3 = i * 3
+  const arm = Math.floor(Math.random() * 3)
+  const armAngle = (arm / 3) * Math.PI * 2
+  const radius = Math.pow(Math.random(), 0.5) * 18
+  const branch = armAngle + radius * 0.4
   const sx = Math.pow(Math.random(), 3) * 2.5
   const sy = Math.pow(Math.random(), 3) * 0.8
   const sz = Math.pow(Math.random(), 3) * 2.5
-
   galaxyPositions[i3]     = Math.cos(branch) * radius + (Math.random() > 0.5 ? sx : -sx)
   galaxyPositions[i3 + 1] = Math.random() > 0.5 ? sy : -sy
   galaxyPositions[i3 + 2] = Math.sin(branch) * radius + (Math.random() > 0.5 ? sz : -sz)
-
   const t = Math.min(radius / 18, 1)
   const c = new THREE.Color()
   if (t < 0.4) c.lerpColors(colorInner, colorMid, t / 0.4)
   else         c.lerpColors(colorMid, colorOuter, (t - 0.4) / 0.6)
-
-  galaxyColors[i3]     = c.r
-  galaxyColors[i3 + 1] = c.g
-  galaxyColors[i3 + 2] = c.b
+  galaxyColors[i3] = c.r; galaxyColors[i3+1] = c.g; galaxyColors[i3+2] = c.b
 }
 
 const DUST_COUNT = 30000
@@ -50,32 +41,22 @@ const dustPositions = new Float32Array(DUST_COUNT * 3)
 const dustColors    = new Float32Array(DUST_COUNT * 3)
 
 for (let i = 0; i < DUST_COUNT; i++) {
-  const i3    = i * 3
+  const i3 = i * 3
   const theta = Math.random() * Math.PI * 2
-  const phi   = Math.acos(2 * Math.random() - 1)
-  const r     = 4 + Math.random() * 10
-
+  const phi = Math.acos(2 * Math.random() - 1)
+  const r = 4 + Math.random() * 10
   dustPositions[i3]     = r * Math.sin(phi) * Math.cos(theta)
   dustPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.3
   dustPositions[i3 + 2] = r * Math.cos(phi)
-
-  const hue = 0.65 + Math.random() * 0.15
-  const sat = 0.4  + Math.random() * 0.4
-  const lit = 0.15 + Math.random() * 0.25
-  const c   = new THREE.Color().setHSL(hue, sat, lit)
-
-  dustColors[i3]     = c.r
-  dustColors[i3 + 1] = c.g
-  dustColors[i3 + 2] = c.b
+  const c = new THREE.Color().setHSL(0.65 + Math.random() * 0.15, 0.4 + Math.random() * 0.4, 0.15 + Math.random() * 0.25)
+  dustColors[i3] = c.r; dustColors[i3+1] = c.g; dustColors[i3+2] = c.b
 }
 
-// ─── GALAXY ───────────────────────────────────────────────────────────────────
+// ─── THREE COMPONENTS ────────────────────────────────────────────────────────
 
 function Galaxy() {
   const mesh = useRef<THREE.Points>(null)
-  useFrame((_, delta) => {
-    if (mesh.current) mesh.current.rotation.y += delta * 0.018
-  })
+  useFrame((_, delta) => { if (mesh.current) mesh.current.rotation.y += delta * 0.018 })
   return (
     <points ref={mesh}>
       <bufferGeometry>
@@ -87,13 +68,9 @@ function Galaxy() {
   )
 }
 
-// ─── NEBULA DUST ──────────────────────────────────────────────────────────────
-
 function NebulaDust() {
   const mesh = useRef<THREE.Points>(null)
-  useFrame((_, delta) => {
-    if (mesh.current) mesh.current.rotation.y -= delta * 0.008
-  })
+  useFrame((_, delta) => { if (mesh.current) mesh.current.rotation.y -= delta * 0.008 })
   return (
     <points ref={mesh}>
       <bufferGeometry>
@@ -105,18 +82,14 @@ function NebulaDust() {
   )
 }
 
-// ─── CAMERA CONTROLLER ────────────────────────────────────────────────────────
-
 function CameraController({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
   "use no memo"
   const get = useThree((s) => s.get)
   useFrame(() => {
-    const camera  = get().camera
-    const t       = scrollRef.current
-    const targetZ = THREE.MathUtils.lerp(14, 1, t)
-    const targetY = THREE.MathUtils.lerp(2, 0.2, t)
-    camera.position.z += (targetZ - camera.position.z) * 0.05
-    camera.position.y += (targetY - camera.position.y) * 0.05
+    const camera = get().camera
+    const t = scrollRef.current
+    camera.position.z += (THREE.MathUtils.lerp(14, 1, t) - camera.position.z) * 0.05
+    camera.position.y += (THREE.MathUtils.lerp(2, 0.2, t) - camera.position.y) * 0.05
     camera.lookAt(0, 0, 0)
   })
   return null
@@ -125,26 +98,53 @@ function CameraController({ scrollRef }: { scrollRef: React.MutableRefObject<num
 // ─── NARRATIVE TEXT ───────────────────────────────────────────────────────────
 
 const LINES = [
-  { text: "Hey.",                        stay: false },
-  { text: "I need you to hear this.",    stay: false },
-  { text: "Please, read until the end.", stay: true  },
+  { text: "Hey." },
+  { text: "I need you to hear this." },
+  { text: "Please, read until the end." },
 ]
 
-function NarrativeText() {
+const RANGES: [number, number, number | null, number | null][] = [
+  [0.00, 0.15, 0.22, 0.30],
+  [0.28, 0.42, 0.50, 0.58],
+  [0.62, 0.75, null, null],
+]
+
+function NarrativeText({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
   const refs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 1.2 })
-    LINES.forEach((line, i) => {
-      const el = refs.current[i]
-      if (!el) return
-      tl.to(el, { opacity: 1, y: 0, duration: 1.8, ease: "power2.out" })
-      if (!line.stay) {
-        tl.to(el, { opacity: 0, y: -20, duration: 1.2, ease: "power2.in" }, "+=1.4")
-      }
-    })
-    return () => { tl.kill() }
-  }, [])
+    let rafId: number
+    const tick = () => {
+      const p = scrollRef.current
+      refs.current.forEach((el, i) => {
+        if (!el) return
+        const [inS, inE, outS, outE] = RANGES[i]
+        let opacity = 0, y = 24
+
+        if (p < inS) {
+          opacity = 0; y = 24
+        } else if (p < inE) {
+          const t = (p - inS) / (inE - inS)
+          opacity = t; y = 24 * (1 - t)
+        } else if (outS === null) {
+          opacity = 1; y = 0
+        } else if (p < outS) {
+          opacity = 1; y = 0
+        } else if (outE !== null && p < outE) {
+          const t = (p - outS) / (outE - outS)
+          opacity = 1 - t; y = -20 * t
+        } else {
+          opacity = 0; y = -20
+        }
+
+        el.style.opacity = String(opacity)
+        el.style.transform = `translateY(${y}px)`
+      })
+      rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [scrollRef])
 
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 10 }}>
@@ -164,6 +164,7 @@ function NarrativeText() {
             textAlign: "center",
             padding: "0 2rem",
             textShadow: "0 0 40px rgba(120,80,200,0.4), 0 2px 20px rgba(0,0,0,0.8)",
+            willChange: "opacity, transform",
           }}
         >
           {line.text}
@@ -173,27 +174,22 @@ function NarrativeText() {
   )
 }
 
-// ─── VIGNETTE ─────────────────────────────────────────────────────────────────
-
 function Vignette() {
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        pointerEvents: "none",
-        zIndex: 5,
-        background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.92) 100%)",
-      }}
-    />
+    <div style={{
+      position: "absolute", inset: 0, pointerEvents: "none", zIndex: 5,
+      background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.92) 100%)",
+    }} />
   )
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 export default function HeroIntro() {
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const scrollRef  = useRef(0)
+  const sectionRef  = useRef<HTMLDivElement>(null)
+  const scrollRef   = useRef(0)
+  const canvasRef   = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(true)
 
   useEffect(() => {
     if (!sectionRef.current) return
@@ -201,50 +197,70 @@ export default function HeroIntro() {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: "bottom top",
+      end: "bottom bottom",
       scrub: true,
-      onUpdate: (self) => { scrollRef.current = self.progress },
+      onUpdate: (self) => {
+        scrollRef.current = self.progress
+
+        // Fade out galaxy di 85–100% scroll terakhir
+        if (canvasRef.current) {
+          const fadeStart = 0.85
+          const p = self.progress
+          if (p >= fadeStart) {
+            const t = (p - fadeStart) / (1 - fadeStart)
+            canvasRef.current.style.opacity = String(1 - t)
+          } else {
+            canvasRef.current.style.opacity = "1"
+          }
+        }
+      },
+      onLeave: () => {
+        // Unmount setelah fade selesai
+        setTimeout(() => setMounted(false), 100)
+      },
+      onEnterBack: () => {
+        setMounted(true)
+        if (canvasRef.current) canvasRef.current.style.opacity = "1"
+      },
     })
 
     return () => trigger.kill()
   }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "300vh",        // lebih tinggi biar scroll zone cukup
-        background: "#000000",
-        marginBottom: 0,
-        paddingBottom: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden",
-          background: "#000000", 
-        }}
-      >
-        <Canvas
-          style={{ position: "absolute", inset: 0 }}
-          gl={{ antialias: true, alpha: false }}
-          camera={{ fov: 60, near: 0.1, far: 100, position: [0, 2, 14] }}
+    <>
+      {mounted && (
+        <div
+          ref={canvasRef}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            background: "#000000",
+            pointerEvents: "none",
+            transition: "none",
+          }}
         >
-          <color attach="background" args={["#000000"]} />
-          <fog attach="fog" args={["#000000", 18, 40]} />
-          <Galaxy />
-          <NebulaDust />
-          <CameraController scrollRef={scrollRef} />
-        </Canvas>
-        <Vignette />
-        <NarrativeText />
-      </div>
-    </section>
+          <Canvas
+            style={{ position: "absolute", inset: 0 }}
+            gl={{ antialias: true, alpha: false }}
+            camera={{ fov: 60, near: 0.1, far: 100, position: [0, 2, 14] }}
+          >
+            <color attach="background" args={["#000000"]} />
+            <fog attach="fog" args={["#000000", 18, 40]} />
+            <Galaxy />
+            <NebulaDust />
+            <CameraController scrollRef={scrollRef} />
+          </Canvas>
+          <Vignette />
+          <NarrativeText scrollRef={scrollRef} />
+        </div>
+      )}
+
+      <section
+        ref={sectionRef}
+        style={{ position: "relative", width: "100%", height: "500vh", background: "transparent", zIndex: 1 }}
+      />
+    </>
   )
 }
