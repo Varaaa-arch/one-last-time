@@ -8,7 +8,7 @@ import * as THREE from "three"
 
 gsap.registerPlugin(ScrollTrigger)
 
-// ─── PRE-GENERATE PARTICLE DATA (module level, never re-runs) ─────────────────
+// ─── PRE-GENERATE PARTICLE DATA ───────────────────────────────────────────────
 
 const GALAXY_COUNT = 120000
 const galaxyPositions = new Float32Array(GALAXY_COUNT * 3)
@@ -73,11 +73,9 @@ for (let i = 0; i < DUST_COUNT; i++) {
 
 function Galaxy() {
   const mesh = useRef<THREE.Points>(null)
-
   useFrame((_, delta) => {
     if (mesh.current) mesh.current.rotation.y += delta * 0.018
   })
-
   return (
     <points ref={mesh}>
       <bufferGeometry>
@@ -93,11 +91,9 @@ function Galaxy() {
 
 function NebulaDust() {
   const mesh = useRef<THREE.Points>(null)
-
   useFrame((_, delta) => {
     if (mesh.current) mesh.current.rotation.y -= delta * 0.008
   })
-
   return (
     <points ref={mesh}>
       <bufferGeometry>
@@ -113,20 +109,16 @@ function NebulaDust() {
 
 function CameraController({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
   "use no memo"
-
   const get = useThree((s) => s.get)
-
   useFrame(() => {
-    const camera = get().camera
+    const camera  = get().camera
     const t       = scrollRef.current
     const targetZ = THREE.MathUtils.lerp(14, 1, t)
     const targetY = THREE.MathUtils.lerp(2, 0.2, t)
-
     camera.position.z += (targetZ - camera.position.z) * 0.05
     camera.position.y += (targetY - camera.position.y) * 0.05
     camera.lookAt(0, 0, 0)
   })
-
   return null
 }
 
@@ -143,18 +135,14 @@ function NarrativeText() {
 
   useEffect(() => {
     const tl = gsap.timeline({ delay: 1.2 })
-
     LINES.forEach((line, i) => {
       const el = refs.current[i]
       if (!el) return
-
       tl.to(el, { opacity: 1, y: 0, duration: 1.8, ease: "power2.out" })
-
       if (!line.stay) {
         tl.to(el, { opacity: 0, y: -20, duration: 1.2, ease: "power2.in" }, "+=1.4")
       }
     })
-
     return () => { tl.kill() }
   }, [])
 
@@ -222,8 +210,27 @@ export default function HeroIntro() {
   }, [])
 
   return (
-    <section ref={sectionRef} style={{ position: "relative", width: "100%", height: "200vh", background: "#000000" }}>
-      <div style={{ position: "sticky", top: 0, width: "100%", height: "100vh", overflow: "hidden" }}>
+    <section
+      ref={sectionRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "300vh",        // lebih tinggi biar scroll zone cukup
+        background: "#000000",
+        marginBottom: 0,
+        paddingBottom: 0,
+      }}
+    >
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
+          background: "#000000", 
+        }}
+      >
         <Canvas
           style={{ position: "absolute", inset: 0 }}
           gl={{ antialias: true, alpha: false }}
