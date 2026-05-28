@@ -45,7 +45,7 @@ export default function PreLoader() {
     return () => window.removeEventListener("mousemove", move)
   }, [])
 
-  // GSAP ENTRANCE ANIMATION (FADE IN UP)
+  // GSAP ENTRANCE ANIMATION
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline()
@@ -56,28 +56,24 @@ export default function PreLoader() {
         { opacity: 0, y: 140, filter: "blur(10px)" },
         { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.6, ease: cinematicEase }
       )
-
       tl.fromTo(
         ".hero-subtext",
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 1.2, ease: cinematicEase },
         "-=1.2"
       )
-
       tl.fromTo(
         ".hero-line",
         { scaleX: 0, opacity: 0 },
         { scaleX: 1, opacity: 1, duration: 1.2, ease: cinematicEase },
         "-=1"
       )
-
       tl.fromTo(
         ".hero-btn",
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 1.1, ease: cinematicEase },
         "-=0.9"
       )
-
       tl.fromTo(
         ".bottom-text",
         { opacity: 0, y: 30 },
@@ -116,44 +112,54 @@ export default function PreLoader() {
   return (
     <div
       ref={container}
-      className="fixed inset-0 z-99999 overflow-hidden bg-[#f3f1ec]"
+      className="fixed inset-0 z-99999 overflow-hidden bg-black"
     >
       {/* GRAIN OVERLAY */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03] mix-blend-multiply"
+        className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-screen"
         style={{
           backgroundImage: "url('https://grainy-gradients.vercel.app/noise.svg')",
         }}
       />
 
-      {/* FLOATING AMBIENT BLUR */}
-      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/3 blur-3xl" />
+      {/* AMBIENT GLOW — ungu gelap biar nyambung sama galaxy */}
+      <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3b1f6a]/20 blur-3xl pointer-events-none" />
+
+      {/* VIGNETTE */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)",
+        }}
+      />
 
       {/* TOP BAR */}
       <div className="absolute left-0 top-0 flex w-full items-center justify-between p-8">
-        <h1 className="logo text-[15px] font-medium uppercase tracking-[-0.03em] text-black">
+        <h1 className="logo text-[15px] font-medium uppercase tracking-[-0.03em] text-white/70">
           One Last Time
         </h1>
-        <div className="clock rounded-full border border-black/10 px-4 py-2 text-[10px] uppercase tracking-[0.15em] text-black/55 backdrop-blur-xl">
+        <div className="clock rounded-full border border-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.15em] text-white/35 backdrop-blur-xl">
           {time}
         </div>
       </div>
 
       {/* CENTER CONTENT */}
       <div className="flex h-screen flex-col items-center justify-center px-6">
-        <h1 className="hero-title max-w-[1200px] text-center text-[72px] font-semibold leading-[0.9] tracking-[-0.07em] text-black md:text-[140px]">
+        <h1 className="hero-title max-w-[1200px] text-center text-[72px] font-semibold leading-[0.9] tracking-[-0.07em] text-white md:text-[140px]"
+          style={{ textShadow: "0 0 80px rgba(120,80,200,0.3)" }}
+        >
           One Last Time.
         </h1>
 
-        <p className="hero-subtext mt-6 text-center text-sm text-black/55 md:text-base">
+        <p className="hero-subtext mt-6 text-center text-sm text-white/45 md:text-base">
           Put your headphones on for the best emotional experience.
         </p>
 
-        <div className="hero-line mt-10 h-px w-[260px] origin-center bg-black/10" />
+        <div className="hero-line mt-10 h-px w-[260px] origin-center bg-white/15" />
 
         <button
           onClick={handleEnterClick}
-          className="hero-btn group mt-10 rounded-full border border-black px-8 py-4 text-xs uppercase tracking-[0.2em] text-black transition-all duration-500 hover:bg-black hover:text-white"
+          className="hero-btn group mt-10 rounded-full border border-white/25 px-8 py-4 text-xs uppercase tracking-[0.2em] text-white/70 transition-all duration-500 hover:border-white/60 hover:text-white hover:bg-white/5"
         >
           <span className="flex items-center gap-2">
             Enter
@@ -163,7 +169,7 @@ export default function PreLoader() {
       </div>
 
       {/* BOTTOM TEXT */}
-      <div className="bottom-text absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-black/30">
+      <div className="bottom-text absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-white/25">
         Cinematic Interactive Experience
       </div>
     </div>
