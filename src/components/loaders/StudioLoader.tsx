@@ -34,10 +34,10 @@ function ParticleCanvas() {
     const particles: Particle[] = Array.from({ length: PARTICLE_COUNT }, () => ({
       x:      Math.random() * canvas.width,
       y:      Math.random() * canvas.height,
-      size:   Math.random() * 1.8 + 0.4,
+      size:   Math.random() * 2.4 + 0.7,
       speedX: (Math.random() - 0.5) * 0.3,
       speedY: -(Math.random() * 0.4 + 0.1),
-      opacity: Math.random() * 0.5 + 0.1,
+      opacity: Math.random() * 0.65 + 0.3,
       color:  colors[Math.floor(Math.random() * colors.length)],
     }))
 
@@ -60,7 +60,7 @@ function ParticleCanvas() {
         if (p.y < 0 || p.opacity <= 0) {
           p.x       = Math.random() * canvas.width
           p.y       = canvas.height + 10
-          p.opacity = Math.random() * 0.5 + 0.1
+          p.opacity = Math.random() * 0.65 + 0.3
           p.speedX  = (Math.random() - 0.5) * 0.3
           p.speedY  = -(Math.random() * 0.4 + 0.1)
         }
