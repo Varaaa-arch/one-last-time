@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { gsap } from "gsap"
+import { useLenis } from "lenis/react"
 import * as THREE from "three"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -109,8 +110,15 @@ const RANGES: [number, number, number | null, number | null][] = [
   [0.62, 0.75, null, null],
 ]
 
-function NarrativeText({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
+function NarrativeText({
+  scrollRef,
+  onMsg3Visible,
+}: {
+  scrollRef: React.MutableRefObject<number>
+  onMsg3Visible: (visible: boolean) => void
+}) {
   const refs = useRef<(HTMLDivElement | null)[]>([])
+  const msg3WasVisible = useRef(false)
 
   useEffect(() => {
     let rafId: number
@@ -139,12 +147,21 @@ function NarrativeText({ scrollRef }: { scrollRef: React.MutableRefObject<number
 
         el.style.opacity = String(opacity)
         el.style.transform = `translateY(${y}px)`
+
+        // Notify parent ketika msg3 muncul
+        if (i === 2) {
+          const isVisible = opacity > 0.5
+          if (isVisible !== msg3WasVisible.current) {
+            msg3WasVisible.current = isVisible
+            onMsg3Visible(isVisible)
+          }
+        }
       })
       rafId = requestAnimationFrame(tick)
     }
     rafId = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafId)
-  }, [scrollRef])
+  }, [scrollRef, onMsg3Visible])
 
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 10 }}>
@@ -189,7 +206,40 @@ export default function HeroIntro() {
   const sectionRef  = useRef<HTMLDivElement>(null)
   const scrollRef   = useRef(0)
   const canvasRef   = useRef<HTMLDivElement>(null)
+  const btnRef      = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(true)
+  const [showBtn, setShowBtn] = useState(false)
+
+  const lenis = useLenis()
+
+  const handleContinue = () => {
+    if (!canvasRef.current) return
+
+    // Fade out galaxy dulu, baru scroll
+    gsap.to(canvasRef.current, {
+      opacity: 0,
+      duration: 1.2,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setMounted(false)
+        lenis?.scrollTo("#what-i-realized", {
+          duration: 1.8,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        })
+      },
+    })
+  }
+
+  // Fade in/out button saat msg3 muncul
+  useEffect(() => {
+    if (!btnRef.current) return
+    gsap.to(btnRef.current, {
+      opacity: showBtn ? 1 : 0,
+      y: showBtn ? 0 : 16,
+      duration: 0.8,
+      ease: "power2.out",
+    })
+  }, [showBtn])
 
   useEffect(() => {
     if (!sectionRef.current) return
@@ -201,22 +251,6 @@ export default function HeroIntro() {
       scrub: true,
       onUpdate: (self) => {
         scrollRef.current = self.progress
-
-        // Fade out galaxy di 85–100% scroll terakhir
-        if (canvasRef.current) {
-          const fadeStart = 0.85
-          const p = self.progress
-          if (p >= fadeStart) {
-            const t = (p - fadeStart) / (1 - fadeStart)
-            canvasRef.current.style.opacity = String(1 - t)
-          } else {
-            canvasRef.current.style.opacity = "1"
-          }
-        }
-      },
-      onLeave: () => {
-        // Unmount setelah fade selesai
-        setTimeout(() => setMounted(false), 100)
       },
       onEnterBack: () => {
         setMounted(true)
@@ -253,7 +287,52 @@ export default function HeroIntro() {
             <CameraController scrollRef={scrollRef} />
           </Canvas>
           <Vignette />
-          <NarrativeText scrollRef={scrollRef} />
+          <NarrativeText scrollRef={scrollRef} onMsg3Visible={setShowBtn} />
+
+          {/* CONTINUE BUTTON */}
+          <div
+            ref={btnRef}
+            onClick={handleContinue}
+            style={{
+              position: "absolute",
+              bottom: "40px",
+              left: "50%",
+              transform: "translateX(-50%) translateY(16px)",
+              zIndex: 20,
+              opacity: 0,
+              pointerEvents: showBtn ? "auto" : "none",
+              cursor: "pointer",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "8px",
+              color: "rgba(255,255,255,0.45)",
+              transition: "color 0.4s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
+          >
+            <span style={{
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.3em",
+              fontWeight: 300,
+              fontFamily: "var(--font-sans, sans-serif)",
+            }}>
+              Continue
+            </span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+              style={{ animation: "bounce 1.5s infinite" }}>
+              <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+
+          <style>{`
+            @keyframes bounce {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(4px); }
+            }
+          `}</style>
         </div>
       )}
 
