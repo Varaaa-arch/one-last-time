@@ -1,10 +1,12 @@
 import HeroIntro from "@/components/sections/HeroInto"
-// import HeroIntro2 from "@/components/sections/HeroInto2"
+import CustomCursor from "@/components/ui/CustomCursor";
+
 
 export default function HeroIntroPage() {
   return (
     <>
       <HeroIntro />
+      <CustomCursor/>
       {/* <HeroIntro2 /> */}
     </>
   )
