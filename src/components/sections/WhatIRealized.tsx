@@ -3,10 +3,10 @@
 import { motion, type Variants } from "framer-motion"
 
 const reflections = [
-  "I was too consumed by my own ego.",
-  "I forgot that you were tired too.",
-  "I failed to see the small things you did.",
-  "I chose silence when you needed me to speak.",
+  "Aku terlalu sibuk dengan egoku sendiri.",
+  "Aku lupa kalau kamu juga lelah.",
+  "Aku gagal melihat hal-hal kecil yang kamu lakukan.",
+  "Aku memilih diam saat kamu membutuhkan suaraku.",
 ]
 
 const easeCurve: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -95,7 +95,7 @@ export default function WhatIRealized() {
           className="mb-16 text-center"
         >
           <p className="mb-3 text-[10px] uppercase tracking-[0.4em] text-white/25">
-            A moment of honesty
+            Momen Kejujuran
           </p>
 
           <h2
@@ -104,7 +104,7 @@ export default function WhatIRealized() {
               textShadow: "0 0 60px rgba(120,80,200,0.25)",
             }}
           >
-            Things I Realized
+            Hal yang ku sadari
           </h2>
 
           <div
@@ -167,7 +167,7 @@ export default function WhatIRealized() {
           viewport={{ once: true }}
           className="mt-16 text-center text-[12px] font-light italic tracking-wide text-white/20"
         >
-          {"I'm sorry it took me this long to see it."}
+          {"Aku nyesel butuh waktu selama ini untuk menyadarinya."}
         </motion.p>
       </div>
     </section>
