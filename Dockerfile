@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base
-FROM node:22-alpine
+FROM node:22-alpine as base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -13,7 +13,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
-FROM base AS builder
+FROM base AS builde
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
