@@ -106,9 +106,9 @@ function CameraController({ scrollRef }: { scrollRef: React.MutableRefObject<num
 // ─────────────────────────────────────────────────────────────
 
 const LINES = [
-  { text: "Hey." },
-  { text: "I need you to hear this." },
-  { text: "Please, read until the end." },
+  { text: "Hei." },
+  { text: "Aku mau kamu baca ini." },
+  { text: "Please, ikuti ini sampai akhir." },
 ]
 
 const RANGES: [number, number, number | null, number | null][] = [
