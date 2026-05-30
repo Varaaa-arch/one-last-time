@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { gsap } from "gsap"
-import { useLenis } from "lenis/react"
+import { useRouter } from "next/navigation"
 import * as THREE from "three"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -196,7 +196,7 @@ function Vignette() {
 // ─────────────────────────────────────────────────────────────
 
 export default function HeroIntro() {
-  const lenis = useLenis()
+  const router = useRouter()
   const sectionRef  = useRef<HTMLDivElement>(null)
   const scrollRef   = useRef(0)
   const canvasRef   = useRef<HTMLDivElement>(null)
@@ -214,10 +214,7 @@ export default function HeroIntro() {
       onComplete: () => {
         setMounted(false)
         // Scroll ke #what-i-realized setelah galaxy hilang
-        lenis?.scrollTo("#what-i-realized", {
-          duration: 1.8,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        })
+        router.push("/what-i-realized")
       },
     })
   }
