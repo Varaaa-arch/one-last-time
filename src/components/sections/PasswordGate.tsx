@@ -40,7 +40,9 @@ export default function PasswordGate() {
       delay: 0.6,
       ease: "power3.inOut",
       onComplete: () => {
-        document.cookie = "verified=true; path=/; max-age=86400"
+        const expires = new Date()
+        expires.setDate(expires.getDate() + 1)
+        document.cookie = `verified=true; path=/; expires=${expires.toUTCString()}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
         router.push("/letter")
       },
     })

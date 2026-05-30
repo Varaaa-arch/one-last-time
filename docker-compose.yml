@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SUPABASE_URL=https://qzjxfmdilqdybxkhhpdk.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6anhmbWRpbHFkeWJ4a2hocGRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDU4MzUsImV4cCI6MjA5NTE4MTgzNX0.1Dl493XH5JoX4MoLLu1SQGeNleKB4JguFXxA3WRq9yc
+    restart: unless-stopped
