@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base
-FROM node:20-alpine AS base
+FROM node:22-alpine
 
 # Install dependencies only when needed
 FROM base AS deps
