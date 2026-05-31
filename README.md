@@ -20,7 +20,7 @@ hanya untuk bilang hal-hal yang susah diucapkan langsung.
 
 ## apa ini?
 
-sebuah *cinematic storytelling experience* — kamu scroll, kamu baca, kamu rasakan.  
+sebuah *cinematic storytelling experience* kamu scroll, kamu baca, kamu rasakan.  
 dibangun dengan obsesi terhadap detail dan terlalu banyak waktu luang.
 
 ada galaxy yang bisa kamu zoom in.  
@@ -112,10 +112,10 @@ password-nya bukan `123456`.
 
 ## untuk kamu yang sampai sini
 
-kalau kamu bukan orang yang gw maksud —  
+kalau kamu bukan orang yang gw maksud 
 terima kasih sudah main-main ke sini.
 
-kalau kamu orang yang gw maksud —  
+kalau kamu orang yang gw maksud 
 kamu tahu apa yang harus kamu lakukan selanjutnya.
 
 ---
