@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js"
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-const WA_NUMBER = "6281234567890" // ganti dengan nomor kamu
+const WA_NUMBER = "6285697350772" // ganti dengan nomor kamu
 const WA_URL    = `https://wa.me/${WA_NUMBER}`
 
 const supabase = createClient(
@@ -175,7 +175,7 @@ export default function FinalScene() {
           className="max-w-md text-[clamp(13px,1.8vw,16px)] font-light leading-relaxed text-white/35"
           style={{ fontFamily: "var(--font-serif, Georgia, serif)", fontStyle: "italic" }}
         >
-          Apapun yang terjadi selanjutnya, aku ingin kamu tahu — kamu berarti lebih dari yang bisa aku ungkapkan.
+          Apapun yang terjadi selanjutnya, aku ingin kamu tahu, kamu berarti lebih dari yang bisa aku ungkapkan.
         </motion.p>
 
         {/* DIVIDER */}
@@ -215,7 +215,7 @@ export default function FinalScene() {
               className="relative text-[11px] uppercase tracking-[0.3em] font-light text-orange-200/70 transition-colors duration-300 group-hover:text-orange-100"
               style={{ fontFamily: "var(--font-sans, sans-serif)" }}
             >
-              Boleh kita bicara lagi?
+              Ayo, kita bicara lagi
             </span>
 
             <motion.span
@@ -235,7 +235,7 @@ export default function FinalScene() {
           transition={{ duration: 2, delay: 1.8 }}
           className="text-[10px] uppercase tracking-[0.4em] text-white/10"
         >
-          One Last Time — 2024
+          One Last Time - 2026
         </motion.p>
 
       </div>
