@@ -1,7 +1,9 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { gsap } from "gsap"
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -140,6 +142,127 @@ function PolaroidCard({ memory, index }: { memory: Memory; index: number }) {
   )
 }
 
+// ─── FINAL SCENE BUTTON ──────────────────────────────────────────────────────
+
+function FinalSceneButton() {
+  const router   = useRouter()
+  const wrapRef  = useRef<HTMLDivElement>(null)
+  const btnRef   = useRef<HTMLDivElement>(null)
+  const [hovered, setHovered] = useState(false)
+  const [inView, setInView]   = useState(false)
+
+  useEffect(() => {
+    if (!wrapRef.current) return
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setInView(true) },
+      { threshold: 0.3 }
+    )
+    obs.observe(wrapRef.current)
+    return () => obs.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!inView || !btnRef.current) return
+    gsap.fromTo(btnRef.current,
+      { opacity: 0, y: 50, filter: "blur(8px)" },
+      { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.4, ease: "power3.out", delay: 0.3 }
+    )
+  }, [inView])
+
+  const handleClick = () => {
+    if (!wrapRef.current) return
+    gsap.timeline()
+      .to(btnRef.current, { scale: 0.95, duration: 0.1, ease: "power2.in" })
+      .to(btnRef.current, { scale: 1.02, duration: 0.15, ease: "power2.out" })
+      .to(wrapRef.current, {
+        opacity: 0,
+        duration: 1,
+        ease: "power3.inOut",
+        onComplete: () => router.push("/final-scene"),
+      })
+  }
+
+  return (
+    <div ref={wrapRef} className="relative z-30 mb-24 flex flex-col items-center gap-4">
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ duration: 1, delay: 0.6 }}
+        className="text-[10px] uppercase tracking-[0.4em] text-white/20"
+      >
+        Satu babak terakhir
+      </motion.p>
+
+      <div
+        ref={btnRef}
+        onClick={handleClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{ opacity: 0 }}
+        className="relative cursor-pointer"
+      >
+        {/* PULSE RING */}
+        <motion.div
+          animate={hovered
+            ? { scale: 1.2, opacity: 0.18 }
+            : { scale: [1, 1.15, 1], opacity: [0.05, 0.12, 0.05] }
+          }
+          transition={hovered
+            ? { duration: 0.4, ease: "easeOut" }
+            : { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+          }
+          className="absolute inset-0 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(123,79,207,1) 0%, transparent 70%)" }}
+        />
+
+        {/* BUTTON BODY */}
+        <motion.div
+          animate={hovered
+            ? { borderColor: "rgba(123,79,207,0.7)", background: "rgba(123,79,207,0.08)" }
+            : { borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.03)" }
+          }
+          transition={{ duration: 0.35 }}
+          className="relative flex items-center gap-4 rounded-full border px-10 py-5"
+          style={{
+            boxShadow: hovered
+              ? "0 0 40px rgba(123,79,207,0.15), inset 0 0 20px rgba(123,79,207,0.05)"
+              : "none",
+          }}
+        >
+          <motion.span
+            animate={hovered
+              ? { color: "rgba(255,255,255,1)", letterSpacing: "0.35em" }
+              : { color: "rgba(255,255,255,0.55)", letterSpacing: "0.3em" }
+            }
+            transition={{ duration: 0.35 }}
+            className="text-[11px] uppercase font-light"
+            style={{ fontFamily: "var(--font-sans, sans-serif)" }}
+          >
+            Menuju akhir cerita
+          </motion.span>
+
+          <motion.span
+            animate={hovered ? { x: 5, opacity: 1 } : { x: 0, opacity: 0.4 }}
+            transition={{ duration: 0.35 }}
+            className="text-white text-sm"
+          >
+            →
+          </motion.span>
+        </motion.div>
+      </div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ duration: 1, delay: 1.1 }}
+        className="text-[9px] uppercase tracking-[0.3em] text-white/10"
+      >
+        satu penutup yang jujur
+      </motion.p>
+    </div>
+  )
+}
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 export default function MemoryUniverse() {
@@ -271,11 +394,16 @@ export default function MemoryUniverse() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.5, delay: 0.5 }}
-        className="relative z-10 pb-16 text-center text-[10px] italic text-white/15 tracking-wide"
+        className="relative z-10 pb-12 text-center text-[10px] italic text-white/15 tracking-wide"
         style={{ fontFamily: "var(--font-serif, Georgia, serif)" }}
       >
-        "beberapa momen tidak perlu diingat,mereka sudah terasa."
+        &quot;beberapa momen tidak perlu diingat — mereka sudah terasa.&quot;
       </motion.p>
+
+      {/* FINAL SCENE BUTTON */}
+      <FinalSceneButton />
+
     </section>
   )
 }
+// FILE ALREADY HAS BUTTON - see NextButton component below
