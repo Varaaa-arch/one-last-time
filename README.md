@@ -64,8 +64,8 @@ semua dipilih karena alasan, bukan karena trend.
 ## cara jalanin
 
 ```bash
-git clone https://github.com/username/before-you-leave
-cd before-you-leave
+git clone https://github.com/username/one-last-time
+cd one-last-time
 npm install
 ```
 
