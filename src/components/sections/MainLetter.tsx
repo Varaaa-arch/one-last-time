@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber"
 import { motion, useInView } from "framer-motion"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useRouter } from "next/navigation"
 import ShatteredHeart from "../3d/Shatteredheart"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -117,6 +118,119 @@ const LETTER_PARAGRAPHS = [
   "Tetaplah di sini, bersamaku, melangkah melewati apa pun yang ada di depan. Karena bagiku, kebahagiaan yang sesungguhnya bukanlah tentang di mana kita berada, tapi dengan siapa aku menjalaninya. Dan bagiku, orang itu adalah kamu.",
 ]
 
+// ─── NEXT BUTTON ─────────────────────────────────────────────────────────────
+
+function NextButton() {
+  const router   = useRouter()
+  const wrapRef  = useRef<HTMLDivElement>(null)
+  const btnRef   = useRef<HTMLDivElement>(null)
+  const isInView = useInView(wrapRef, { once: true, margin: "-60px" })
+  const [hovered, setHovered] = useState(false)
+
+  useEffect(() => {
+    if (!isInView || !btnRef.current) return
+    gsap.fromTo(btnRef.current,
+      { opacity: 0, y: 50, filter: "blur(8px)" },
+      { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.4, ease: "power3.out", delay: 0.4 }
+    )
+  }, [isInView])
+
+  const handleClick = () => {
+    if (!wrapRef.current) return
+    gsap.timeline()
+      .to(btnRef.current, { scale: 0.95, duration: 0.1, ease: "power2.in" })
+      .to(btnRef.current, { scale: 1.02, duration: 0.15, ease: "power2.out" })
+      .to(wrapRef.current, {
+        opacity: 0,
+        duration: 1,
+        ease: "power3.inOut",
+        onComplete: () => router.push("/memory-universe"),
+      })
+  }
+
+  return (
+    <div ref={wrapRef} className="mt-20 mb-32 flex flex-col items-center gap-4">
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 1, delay: 0.8 }}
+        className="text-[10px] uppercase tracking-[0.4em] text-white/20"
+      >
+        Masih ada satu hal lagi
+      </motion.p>
+
+      <div
+        ref={btnRef}
+        onClick={handleClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{ opacity: 0 }}
+        className="relative cursor-pointer"
+      >
+        {/* PULSE RING */}
+        <motion.div
+          animate={hovered
+            ? { scale: 1.2, opacity: 0.18 }
+            : { scale: [1, 1.15, 1], opacity: [0.05, 0.12, 0.05] }
+          }
+          transition={hovered
+            ? { duration: 0.4, ease: "easeOut" }
+            : { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+          }
+          className="absolute inset-0 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(123,79,207,1) 0%, transparent 70%)" }}
+        />
+
+        {/* BUTTON */}
+        <motion.div
+          animate={hovered
+            ? { borderColor: "rgba(123,79,207,0.7)", background: "rgba(123,79,207,0.08)" }
+            : { borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.03)" }
+          }
+          transition={{ duration: 0.35 }}
+          className="relative flex items-center gap-4 rounded-full border px-10 py-5"
+          style={{
+            boxShadow: hovered
+              ? "0 0 40px rgba(123,79,207,0.15), inset 0 0 20px rgba(123,79,207,0.05)"
+              : "none",
+          }}
+        >
+          <motion.span
+            animate={hovered
+              ? { color: "rgba(255,255,255,1)", letterSpacing: "0.35em" }
+              : { color: "rgba(255,255,255,0.55)", letterSpacing: "0.3em" }
+            }
+            transition={{ duration: 0.35 }}
+            className="text-[11px] uppercase font-light"
+            style={{ fontFamily: "var(--font-sans, sans-serif)" }}
+          >
+            Lanjutkan perjalanan
+          </motion.span>
+
+          <motion.span
+            animate={hovered ? { x: 5, opacity: 1 } : { x: 0, opacity: 0.4 }}
+            transition={{ duration: 0.35 }}
+            className="text-white text-sm"
+          >
+            →
+          </motion.span>
+        </motion.div>
+      </div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 1, delay: 1.2 }}
+        className="text-[9px] uppercase tracking-[0.3em] text-white/10"
+      >
+        satu kenangan menunggu
+      </motion.p>
+
+    </div>
+  )
+}
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 export default function MainLetter() {
@@ -150,7 +264,7 @@ export default function MainLetter() {
       ref={sectionRef}
       id="main-letter"
       className="relative w-full bg-black"
-      style={{ minHeight: "300vh" }} // panjang scroll zone
+      style={{ minHeight: "300vh" }}
     >
       {/* GRAIN */}
       <div
@@ -158,16 +272,13 @@ export default function MainLetter() {
         style={{ backgroundImage: "url('https://grainy-gradients.vercel.app/noise.svg')" }}
       />
 
-      {/* ── STICKY CONTAINER ── */}
+      {/* STICKY CONTAINER */}
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-
-        {/* VIGNETTE */}
         <div
           className="pointer-events-none absolute inset-0 z-10"
           style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%)" }}
         />
 
-        {/* 3D HEART — center of sticky viewport */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-[420px] w-[420px]">
             <Canvas
@@ -178,8 +289,6 @@ export default function MainLetter() {
               <ShatteredHeart progress={progressRef} />
             </Canvas>
           </div>
-
-          {/* GLOW under heart */}
           <div
             className="pointer-events-none absolute rounded-full blur-3xl"
             style={{
@@ -191,7 +300,6 @@ export default function MainLetter() {
           />
         </div>
 
-        {/* SECTION LABEL — top center, fades in */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -210,7 +318,6 @@ export default function MainLetter() {
           </h2>
         </motion.div>
 
-        {/* SCROLL HINT — bottom */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white/15">
           <span className="text-[9px] uppercase tracking-[0.3em]">scroll</span>
           <motion.div
@@ -224,12 +331,11 @@ export default function MainLetter() {
         </div>
       </div>
 
-      {/* ── SCROLLABLE TEXT — overlays the sticky heart ── */}
+      {/* SCROLLABLE TEXT */}
       <div
         className="relative z-20 mx-auto max-w-lg px-6"
-        style={{ marginTop: "-100vh", paddingTop: "110vh" }} // starts below sticky
+        style={{ marginTop: "-100vh", paddingTop: "110vh" }}
       >
-
         {/* LETTER BODY */}
         <div className="mb-16 space-y-6 rounded-2xl border border-white/8 bg-black/70 p-8 backdrop-blur-xl">
           {LETTER_PARAGRAPHS.map((para, i) => (
@@ -271,7 +377,7 @@ export default function MainLetter() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="mt-12 pb-32 text-right"
+          className="mt-12 text-right"
         >
           <p
             className="text-[12px] font-light italic text-white/25 tracking-wide"
@@ -283,6 +389,9 @@ export default function MainLetter() {
             Bizar.
           </p>
         </motion.div>
+
+        {/* NEXT BUTTON */}
+        <NextButton />
 
       </div>
     </section>
